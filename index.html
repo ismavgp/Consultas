@@ -1,84 +1,151 @@
 <!DOCTYPE html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: small;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 15px;
+      }
 
-    <!-- cargar css -->
-    <link rel="stylesheet" href="css/main.css">
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 5px;
+        margin: 0 auto;
+      }
 
-</head>
+      button {
+        background-color: #242f24;
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+      }
+      .link {
+        text-decoration: none;
+        color: rgb(45, 45, 45);
+        flex: 1;
+        min-width: 250px;
+        max-width: 250px;
+      }
 
-<body>
+      .item {
+        margin-bottom: 5px;
+        border: 1px solid #242f24;
+        padding: 12px;
+        border-radius: 10px;
+        width: 250px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: linear-gradient(
+          135deg,
+          #f8f9fa 0%,
+          #e9ecef 50%,
+          #dee2e6 100%
+        );
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
 
+      .item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(36, 47, 36, 0.15);
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #f8f9fa 50%,
+          #e9ecef 100%
+        );
+      }
+
+      .item h3 {
+        margin: 0;
+        flex: 1;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .img-logo {
+        width: 55px;
+        height: 55px;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+
+  <body>
     <div class="container">
+     
 
-        <a class="link" target="_blank" href="https://sprl.sunarp.gob.pe/sprl/main/partidas-base-grafica-registral">
-            <div class="item">
-                <h3>Consulta Vehicular</h3>
-                <img class="img-logo" src="https://sprl.sunarp.gob.pe/sprl/assets/img/logo-sunarp0.png" alt="sunarp">
-            </div>
-        </a>
+    <script>
+      function getDataFromAPI() {
+        fetch(
+          "https://script.google.com/macros/s/AKfycbz1J3i4tNhQoz5w7Uha6QQ8UnX1GUW__3_VtawRz2NAy5vM-zl59xwrRYZIJzEUoNnHMQ/exec?sheet=VEHICULOS"
+        )
+          .then((response) => response.json())
+          .then((result) => {
+            console.log("Data fetched:", result);
+            renderTable(result);
+          })
+          .catch((error) => {
+            console.error("Error fetching data:", error);
+            const container = document.getElementById("container");
+            if (container)
+              container.innerHTML =
+                '<div class="alert alert-danger">Error al obtener datos</div>';
+          });
+      }
 
-        <a class="link" target="_blank" href="https://sprl.sunarp.gob.pe/sprl/main/partidas-base-grafica-registral">
-            <div class="item">
-                <h3>Historial de dueños y gravámenes</h3>
-                <img class="img-logo" src="https://sprl.sunarp.gob.pe/sprl/assets/img/siguelo-app.png" alt="siguelo">
-            </div>
-        </a>
+      function renderTable(result) {
+        const items =
+          result && result.data
+            ? result.data.filter((i) => i.estado === "A")
+            : [];
+        const container = document.getElementById("container");
+        if (!container) return;
+        container.innerHTML = "";
+        if (!items.length) {
+          container.innerHTML =
+            '<div class="alert alert-info">No hay datos disponibles.</div>';
+          return;
+        }
 
-        <a class="link" target="_blank" href="https://sprl.sunarp.gob.pe/sprl/main/partidas-base-grafica-registral">
-            <div class="item">
-                <h3>Precio pagado por el vehiculo</h3>
-                <img class="img-logo" src="https://sprl.sunarp.gob.pe/sprl/assets/img/logo-sunarp0.png" alt="sunarp">
-            </div>
-        </a>
+        items.forEach((item) => {
+            console.log("Rendering item:", item);
+          const link = document.createElement("a");
+          link.className = "link";
+          link.target = "_blank";
+          link.href = item.url;
 
-        <a class="link" target="_blank" href="https://sprl.sunarp.gob.pe/sprl/main/partidas-base-grafica-registral">
-            <div class="item">
-                <h3>Consulta Propietarios</h3>
-                <img class="img-logo" src="https://sprl.sunarp.gob.pe/sprl/assets/img/logo-sunarp0.png" alt="sunarp">
-            </div>
-        </a>
+          const itemDiv = document.createElement("div");
+          itemDiv.className = "item";
 
-        <a class="link" target="_blank" href="https://sprl.sunarp.gob.pe/sprl/main/partidas-base-grafica-registral">
-            <div class="item">
-                <h3>Consulta Propietarios</h3>
-                <img class="img-logo" src="https://sprl.sunarp.gob.pe/sprl/assets/img/logo-sunarp0.png" alt="sunarp">
-            </div>
-        </a>
+          const title = document.createElement("h3");
+          title.textContent = item.nombre;
 
+          const img = document.createElement("img");
+          img.className = "img-logo";
+          img.src = item.logo_url;
+          img.alt = item.nombre;
 
-        <a class="link" target="_blank" href="https://sprl.sunarp.gob.pe/sprl/main/partidas-base-grafica-registral">
-            <div class="item">
-                <h3>Consulta Propietarios</h3>
-                <img class="img-logo" src="https://sprl.sunarp.gob.pe/sprl/assets/img/logo-sunarp0.png" alt="sunarp">
-            </div>
-        </a>
+          itemDiv.appendChild(title);
+          itemDiv.appendChild(img);
+          link.appendChild(itemDiv);
+          container.appendChild(link);
+        });
+      }
 
-        <a class="link" target="_blank" href="https://sprl.sunarp.gob.pe/sprl/main/partidas-base-grafica-registral">
-            <div class="item">
-                <h3>Consulta Propietarios</h3>
-                <img class="img-logo" src="https://sprl.sunarp.gob.pe/sprl/assets/img/logo-sunarp0.png" alt="sunarp">
-            </div>
-        </a>
-
-        <a class="link" target="_blank" href="https://sprl.sunarp.gob.pe/sprl/main/partidas-base-grafica-registral">
-            <div class="item">
-                <h3>Consulta Propietarios</h3>
-                <img class="img-logo" src="https://sprl.sunarp.gob.pe/sprl/assets/img/logo-sunarp0.png" alt="sunarp">
-            </div>
-        </a>
-
-    </div>
-
-
-
-
-    <script src="js/main.js"></script>
-
-
-</body>
-
+      document.addEventListener("DOMContentLoaded", getDataFromAPI);
+    </script>
+  </body>
 </html>
